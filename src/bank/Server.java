@@ -34,26 +34,25 @@ public class Server {
 			}	
 			InputStreamReader input=null;
 			try {
-				input = new InputStreamReader(socket.getInputStream());
-				BufferedReader br = new BufferedReader(input);
-				String [] details = br.readLine().split(",");
+//				input = new InputStreamReader(socket.getInputStream());
+//				BufferedReader br = new BufferedReader(input);
+//				String i = br.readLine();
+//				String [] details = i.split(",");
+//				username = details[0];
+//				password = details[1];
+				DataInputStream dos = new DataInputStream(socket.getInputStream());
+				String j = dos.readUTF();
+				String [] details = j.split(",");
 				username = details[0];
 				password = details[1];
-				
+				System.out.println(username);
+				System.out.println(password);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-
-			try {
-				Thread t = new Thread(new ClientRunnable(socket,username,password));
-				t.start();
-				t.join(0);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			new Thread(new ClientRunnable(socket,username,password)).start();
 		}
 		
 
