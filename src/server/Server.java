@@ -1,4 +1,4 @@
-package bank;
+package server;
 
 import java.io.*;
 import java.net.*;
@@ -14,7 +14,7 @@ public class Server {
 		try {
 			System.out.println("Welcome to XYZ bank");
 			 server = new ServerSocket(port);
-			 System.out.println("Server listening on port"+3037);
+			 System.out.println("Server listening on port "+3037);
 			 
 		} catch (IOException e) {
 			
@@ -24,9 +24,13 @@ public class Server {
 			Socket socket=null;
 			String password =null;
 			String username = null; 
+			String accountType = null;
 			try {
+				
 				socket = server.accept();
-				System.out.println("Client connected");
+				DataInputStream dos = new DataInputStream(socket.getInputStream());
+				accountType = dos.readUTF();
+				System.out.println( accountType + " connected");
 			} catch (IOException e) {
 				
 				System.out.println("Client cannot be connected to");
@@ -34,25 +38,17 @@ public class Server {
 			}	
 			InputStreamReader input=null;
 			try {
-//				input = new InputStreamReader(socket.getInputStream());
-//				BufferedReader br = new BufferedReader(input);
-//				String i = br.readLine();
-//				String [] details = i.split(",");
-//				username = details[0];
-//				password = details[1];
 				DataInputStream dos = new DataInputStream(socket.getInputStream());
-				String j = dos.readUTF();
-				String [] details = j.split(",");
-				username = details[0];
-				password = details[1];
-				System.out.println(username);
-				System.out.println(password);
+				String fromClient = dos.readUTF();
+				String [] details = fromClient.split(",");
+				username = details[0].trim().toLowerCase();
+				password = details[1].trim();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-//			new Thread(new ClientRunnable(socket,username,password)).start();
+			new Thread(new ClientRunnable(socket,username,password,accountType.toLowerCase())).start();
 		}
 		
 
