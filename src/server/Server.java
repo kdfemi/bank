@@ -43,12 +43,20 @@ public class Server {
 				String [] details = fromClient.split(",");
 				username = details[0].trim().toLowerCase();
 				password = details[1].trim();
+				accountType = details[2].trim().toLowerCase();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			new Thread(new ClientRunnable(socket,username,password,accountType.toLowerCase())).start();
+			try {
+				Thread thread = new Thread(new ClientRunnable(socket,username,password,accountType));
+				thread.start();
+				thread.join();
+			} catch (SQLException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 

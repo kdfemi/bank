@@ -34,7 +34,7 @@ public class Admin {
 			dos = new DataOutputStream(socket.getOutputStream());
 	        dos.writeUTF("Admin");
 	        dos.flush();
-	        dos.writeUTF(username+','+password);
+	        dos.writeUTF(username+','+password+','+"admin");
 	        dos.flush();
 	        dis = new DataInputStream(socket.getInputStream());
 	        detailsCorrect = dis.readBoolean();
@@ -58,6 +58,16 @@ public class Admin {
 				option = readln.readLine();
 	               System.out.println();
 	               validOption = callTranscationType(option,socket);
+	               if(validOption ==true) {
+	            	   System.out.print("\n****************************************\n****************************************\n");
+		               System.out.println("Do you want to perform another operation press 1 or 2");
+		               System.out.println("1.)YES\t\t\t.2)NO");
+		               System.out.print(">>>");
+		               option = readln.readLine();
+		               if(option.equals("1")) validOption = true;
+		               System.out.println();
+	               }
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -70,13 +80,19 @@ public class Admin {
 	  * @param option
 	  * @return boolean
 	  * @throws InterruptedException 
+	 * @throws IOException 
 	  */
-	 private static boolean callTranscationType(String option,Socket socket) throws InterruptedException {
+	 private static boolean callTranscationType(String option,Socket socket) throws InterruptedException, IOException {
 
+		 AdminMethods methods = new AdminMethods(socket);
+//		 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	     switch(option) {
 	      
 	     case "1":
 	         //TODO create user
+//	 		dos.writeUTF("createAccount");
+//	 		dos.flush();
+	    	 methods.createAccount("Miss", "Toyosi", "Kolade", 123459098,"savings");
 	         return true;
 	     case "2":
 	         //TODO update user

@@ -40,7 +40,7 @@ public class Bank {
 		          DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 		          dos.writeUTF("Account");
 		          dos.flush();
-		          dos.writeUTF(username+','+password);
+		          dos.writeUTF(username+','+password+','+"Account");
 		          dos.flush();
 		          isNotValid = inputIncorrect(username, password, socket);
 		          chances--;
