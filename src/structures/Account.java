@@ -1,9 +1,8 @@
 package structures;
-import java.io.DataOutputStream;
 import java.util.Random;
 public class Account implements Transactional{
 	
-	private double balance;
+	private double balance=0;
 	private int accountNumber;
 	private int bvn;
 	private String title;
@@ -12,7 +11,8 @@ public class Account implements Transactional{
 	private String accountTtype;
 	private String pin;
 	
-
+	//constructor to create account with balance ;
+	
 	public Account(String title, String firstName,String surname, int bvn,double deposit, String accountType ) {
  
 		this.bvn = bvn;
@@ -20,21 +20,31 @@ public class Account implements Transactional{
 		this.surname = surname;
 		this.title = title;
 		this.accountTtype = accountType;
-		this.setAccountNumber();
-		this.deposit(deposit);
+		this.setAccountNumber();//buggy
+		this.balance +=deposit;
 
 	}
-	
+	//constructor to create account without balance i.e savings account;
 	public Account(String title, String firstName,String surname, int bvn, String accountType) {
 		
 		this(title, firstName,surname, bvn, 0, accountType);
 	}
 	
+	//constructor to get account
+	public Account(int accountNumber,String title, String firstName,String surname, int bvn,double deposit, String accountType ){
+		this.bvn = bvn;
+		this.firstName = firstName;
+		this.surname = surname;
+		this.title = title;
+		this.accountTtype = accountType;
+		this.accountNumber = accountNumber;
+		this.balance = deposit;
+	}
 	public double getBalance() {
 		return balance;
 	}
 	
-	protected void setBalance(double balance) {
+	public void setBalance(double balance) {
 		this.balance += balance;
 	}
 	

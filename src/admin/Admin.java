@@ -40,7 +40,7 @@ public class Admin {
 	        detailsCorrect = dis.readBoolean();
 	        if(detailsCorrect) System.out.println("You are Logged in!!!");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 			}
 		}
@@ -69,7 +69,7 @@ public class Admin {
 	               }
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			
 				e.printStackTrace();
 			}
 
@@ -85,30 +85,32 @@ public class Admin {
 	 private static boolean callTranscationType(String option,Socket socket) throws InterruptedException, IOException {
 
 		 AdminMethods methods = new AdminMethods(socket);
-//		 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	     switch(option) {
 	      
 	     case "1":
-	         //TODO create user
-//	 		dos.writeUTF("createAccount");
-//	 		dos.flush();
-	    	 methods.createAccount("Miss", "Toyosi", "Kolade", 123459098,"savings");
+	    	 //TODO bvn check if previous bvn name =new account name
+	    	methods.createAccount("Miss", "Oyinda", "Badmus", 453290857,"savings");
 	         return true;
 	     case "2":
-	         //TODO update user
+	    	 /*
+	    	  * editAccount((int)accountNumber,(String)detailType,(Object)detailValue)
+	    	  * detailType: (String)surname, (String)firstname, (number)bvn,(string)accounttype,(int)accessibility
+	    	  */
+	         methods.editAccount(0, "firstname", "tom");
 	         return true;
 	         
 	     case "3":
-	         //TODO delete user
+	    	 // deletAccount((int)accountNumber,(String)firstname,(String)surname)   	  
+	         methods.deleteAccount(0, "jane", "doe");
 	         return true;
 	     case "4":
-	         //TODO deposit for user
+	         methods.deposit(1052146804, 0.0);
 	         return true;
 	     case "5":
-	         //TODO get user details
+	         methods.getAccount(1);
 	         return true;
 	     case "6":
-	         //TODO logout
+	         //TODO withdraw money for client 
 	         return true;
 	     case "7":
 	         System.out.println("You Logged out");

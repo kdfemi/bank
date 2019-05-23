@@ -33,10 +33,9 @@ public class Server {
 				System.out.println( accountType + " connected");
 			} catch (IOException e) {
 				
-				System.out.println("Client cannot be connected to");
+				System.out.println("User cannot be connected to");
 				return;
 			}	
-			InputStreamReader input=null;
 			try {
 				DataInputStream dos = new DataInputStream(socket.getInputStream());
 				String fromClient = dos.readUTF();
@@ -45,7 +44,6 @@ public class Server {
 				password = details[1].trim();
 				accountType = details[2].trim().toLowerCase();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -54,7 +52,7 @@ public class Server {
 				thread.start();
 				thread.join();
 			} catch (SQLException | InterruptedException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
