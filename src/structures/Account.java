@@ -1,8 +1,7 @@
 package structures;
-import java.util.Random;
 public class Account implements Transactional{
 	
-	private double balance=0;
+	private double balance;
 	private int accountNumber;
 	private int bvn;
 	private String title;
@@ -12,7 +11,15 @@ public class Account implements Transactional{
 	private String pin;
 	
 	//constructor to create account with balance ;
-	
+	/**
+	 * Construct to create new account holder Object
+	 * @param title
+	 * @param firstName
+	 * @param surname
+	 * @param bvn
+	 * @param deposit
+	 * @param accountType
+	 */
 	public Account(String title, String firstName,String surname, int bvn,double deposit, String accountType ) {
  
 		this.bvn = bvn;
@@ -20,18 +27,40 @@ public class Account implements Transactional{
 		this.surname = surname;
 		this.title = title;
 		this.accountTtype = accountType;
-		this.setAccountNumber();//buggy
-		this.balance +=deposit;
+		//randomly generate account number
+		//this.setAccountNumber();//not used
+		this.balance = deposit;
 
 	}
 	//constructor to create account without balance i.e savings account;
+	/**
+	 * Construct to create new account holder Object if balance isn't specified
+	 * @param title
+	 * @param firstName
+	 * @param surname
+	 * @param bvn
+	 * @param deposit
+	 * @param accountType
+	 */
 	public Account(String title, String firstName,String surname, int bvn, String accountType) {
 		
 		this(title, firstName,surname, bvn, 0, accountType);
 	}
 	
 	//constructor to get account
-	public Account(int accountNumber,String title, String firstName,String surname, int bvn,double deposit, String accountType ){
+	/**
+	 * Constructor use to store account details from the database.
+	 * The accountNumber is generated on the server so normal constructor cannot
+	 * get user full details.
+	 * @param accountNumber
+	 * @param title
+	 * @param firstName
+	 * @param surname
+	 * @param bvn
+	 * @param deposit
+	 * @param accountType
+	 */
+	public Account(int accountNumber,String title, String firstName,String surname, int bvn,double deposit, String accountType){
 		this.bvn = bvn;
 		this.firstName = firstName;
 		this.surname = surname;
@@ -45,17 +74,11 @@ public class Account implements Transactional{
 	}
 	
 	public void setBalance(double balance) {
-		this.balance += balance;
+		this.balance = balance;
 	}
 	
 	public int getAccountNumber() {
 		return accountNumber;
-	}
-	
-	private void setAccountNumber() {
-		Random rand = new Random();
-		int  accountNumber = 1000000000 + rand.nextInt(900000000);
-		this.accountNumber = accountNumber;
 	}
 	
 	public int getBvn() {
@@ -106,16 +129,17 @@ public class Account implements Transactional{
 	
 	@Override
 	public void deposit(double amount) {
-		
-		setBalance(amount);
+		double oldAmount = this.getBalance();
+		setBalance(oldAmount + amount);
 	}
 
 	@Override
-	public void withdrawal(long amount) {
+	public boolean withdrawal(double amount) {
 
 		double balance = this.getBalance();
 		this.setBalance(balance-amount);
-		System.out.printf(">>> %S amount was withdrawn \n Balance remaining >>> %s", balance,this.getBalance());
+		System.out.printf(">>> %S amount was withdrawn \n Balance remaining >>> %s", amount,this.getBalance());
+		return true;
 	}
 
 	@Override

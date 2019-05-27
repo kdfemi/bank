@@ -12,7 +12,7 @@ public interface Transactional {
 	 * Withdraw inputed amount and deduct from account balance
 	 * @param amount
 	 */
-	void withdrawal(long amount);
+	boolean withdrawal(double amount);
 	
 	/**
 	 * Gets the account balance

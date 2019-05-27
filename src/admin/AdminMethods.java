@@ -123,7 +123,7 @@ public class AdminMethods {
 	 * @return
 	 * @throws IOException
 	 */
-	protected void editAccount(int accountNumber, String detailType, Object detailValue) throws IOException {
+	public void editAccount(int accountNumber, String detailType, Object detailValue) throws IOException {
 		Account account, newAccount;
 		String json, n0, n1;//stores json account, new and old account details value 
 		//pass method you want to call from server
@@ -132,6 +132,7 @@ public class AdminMethods {
 		
 		//send account number, server is waiting for
 		dos.writeInt(accountNumber);
+		dos.flush();
 		//server gets account, send to admin as a json string
 		json =dis.readUTF();
 		//if account empty stop further process
@@ -262,6 +263,43 @@ public class AdminMethods {
 			System.out.println("Changes made successfully");
 			break;
 		}
+		case "password":{
+			
+			//send data type method on server to expect
+			dos.writeUTF("string");
+
+			//cast details from object to string
+			String name = (String)detailValue;
+			
+			//send detail type that wants to be changed to server
+			dos.writeUTF("password");
+			//send detail value to server
+			dos.writeUTF(name);
+			json = dis.readUTF();
+			newAccount = gson.fromJson(json, Account.class);
+			System.out.println("Account details: "+json);
+			System.out.println("Changes made successfully"); 
+			break;
+		}
+		case "username":{
+			
+			//send data type method on server to expect
+			dos.writeUTF("string");
+
+			//cast details from object to string
+			String name = (String)detailValue;
+			
+			//send detail type that wants to be changed to server
+			dos.writeUTF("username");
+			//send detail value to server
+			dos.writeUTF(name);
+			json = dis.readUTF();
+			newAccount = gson.fromJson(json, Account.class);
+			System.out.println("Account details: "+json);
+			System.out.println("Changes made successfully"); 
+			break;
+		}
+		
 		//Not yet implemented
 //		case "accessibility":{
 //			
@@ -301,7 +339,7 @@ public class AdminMethods {
 	 * @return Account
 	 * @throws IOException
 	 */
-	protected void getAccount(int accountNumber) throws IOException {
+	public String getAccount(int accountNumber) throws IOException {
 		
 		//server listen for method type
 		dos.writeUTF("getAccount");
@@ -315,11 +353,12 @@ public class AdminMethods {
 		String incoming = dis.readUTF();
 		if(incoming.isEmpty()) {
 			System.out.println("Account not found");
-			return;
+			return null;
 		}
 //		Account account = gson.fromJson(incoming, Account.class);
 		//prints the json file
 		System.out.println(incoming);
+		return incoming;
 	}
 
 	
@@ -329,7 +368,7 @@ public class AdminMethods {
 	 * @param firstname
 	 * @param surname
 	 */
-	
+
 	protected void deleteAccount(int accountNumber, String firstname, String surname) {
 		try {
 			//tells server operation to perform
@@ -357,12 +396,15 @@ public class AdminMethods {
 		
 	}	
 
-	//TODO Withdraw Amount
-	//TODO Log out
-
-	protected void deposit(int accountNumber, double amount) {
+	/**
+	 * Do deposit
+	 * @param accountNumber
+	 * @param amount
+	 */
+	public void deposit(int accountNumber, double amount) {
 	
 		try {
+			//usually verification of name to match account holder name
 			//notify server operation to perform
 			dos.writeUTF("deposit");
 			//server expect account number next
@@ -377,10 +419,54 @@ public class AdminMethods {
 			System.out.println(json);
 			Account account = gson.fromJson(json, Account.class);
 			System.out.println("Previous account balance: "+ account.getBalance());
+			json = dis.readUTF();
+			account = gson.fromJson(json, Account.class);
+			System.out.println("New account balance: "+ account.getBalance());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Do withdraw, server verifies names against account Number
+	 * @param firstname
+	 * @param surname
+	 * @param accountNumber
+	 * @param amount
+	 */
+	public void withdraw(String firstname, String surname, int accountNumber, double amount) {
+		try {
+			dos.writeUTF("withdrawal");
+			dos.flush();
+			dos.writeUTF(firstname+','+surname+','+accountNumber+','+amount);
+			dos.flush();
+			String json = dis.readUTF();
+			if(json.isEmpty()) {
+				System.out.println("Account not found");
+				return;
+			}
+			
+
+			System.out.println(json);
+			System.out.println(dis.readUTF());
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Do nothing exceptional
+	 */
+	protected void logOut() {
+		try {
+			dos.writeUTF("logout");
+		} catch (IOException e) {
+	
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

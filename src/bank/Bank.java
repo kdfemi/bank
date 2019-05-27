@@ -2,6 +2,12 @@ package bank;
 
 
 import java.net.*;
+
+import com.google.gson.Gson;
+
+import admin.AdminMethods;
+import structures.Account;
+
 import java.io.*;
 
 public class Bank {
@@ -16,14 +22,17 @@ public class Bank {
 		Thread.sleep(2000); //added to slow processing so user can can get a real interface feel
 	
 		BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));//input to collect user's data
-		BufferedReader serverMessage = null;//input to collect server message
 		String username = "";
 		String password = "";
 		boolean isNotValid = true; // stores false if user's username and password are correct
 		int chances = 3;
 		Socket socket=null;
 		Boolean doTransaction = true; //Store client option to do another transaction.
-		
+       //get's user input and receive server's output
+		DataOutputStream dos = null;
+        DataInputStream dis =null;
+        Gson gson = new Gson();
+        Account account = null;
 		//if user wants to do another transaction the while loop is true
 		while(doTransaction){
 			do {
@@ -37,7 +46,8 @@ public class Bank {
 		          password = userInput.readLine(); //collect password
 		          System.out.println();
 		          socket= new Socket("localhost",3037);
-		          DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+		          dos = new DataOutputStream(socket.getOutputStream());
+		          dis = new DataInputStream(socket.getInputStream());
 		          dos.writeUTF("Account");
 		          dos.flush();
 		          dos.writeUTF(username+','+password+','+"Account");
@@ -52,10 +62,13 @@ public class Bank {
 				socket.close();
 				return;
 			}
+			
             //section: welcomes user and print name
             Thread.sleep(2000);
+            String json = dis.readUTF();
+            account = gson.fromJson(json, Account.class);
             System.out.print("\n\n****************************************\n****************************************\n\n");
-            System.out.printf("Welcome to your account"); //TODO Get details from created date base
+            System.out.printf("Welcome %s %s %s to your account",account.getTitle(),account.getFirstName(),account.getSurname());
             System.out.print("\n****************************************\n****************************************\n\n");
             Thread.sleep(2000);
 			 //selection of operation user wants to perform loop terminates when write option is selected
@@ -66,9 +79,21 @@ public class Bank {
                    System.out.print(">>>");
                    String option = userInput.readLine();
                    System.out.println();
-                   validOption = callTranscationType(option);
+                   validOption = callTranscationType(option, socket, account);
                    }while(validOption==false);
-           	doTransaction = false;
+        	   System.out.print("\n****************************************\n****************************************\n");
+               System.out.println("Do you want to perform another operation press 1 or 2");
+               System.out.println("1.)YES\t\t\t.2)NO");
+               System.out.print(">>>");
+               String choice = userInput.readLine();
+               
+               if(choice.equals("1")) {
+            	   doTransaction = true;
+            	   continue;
+               }
+               dos.writeBoolean(false);
+               doTransaction = false;
+           	
 	}
 
 
@@ -119,29 +144,33 @@ public class Bank {
   * @param option
   * @return boolean
   * @throws InterruptedException 
+ * @throws IOException 
   */
- private static boolean callTranscationType(String option) throws InterruptedException {
-
+ private static boolean callTranscationType(String option, Socket socket, Account account) throws InterruptedException, IOException {
+	 AdminMethods methods = new AdminMethods(socket);
      switch(option) {
       
      case "1":
-         //TODO Deposit
+        methods.deposit(account.getAccountNumber(), 15000);
          return true;
      case "2":
-         //TODO withdrawal
+         methods.withdraw(account.getFirstName(), account.getSurname(), account.getAccountNumber(), 2000);
          return true;
          
      case "3":
-         //TODO Check Account balance
+         String json = methods.getAccount(account.getAccountNumber());
+         Gson gson = new Gson();
+         Account errm = gson.fromJson(json, Account.class);
+         System.out.println("Your account balance is: "+errm.getBalance());
          return true;
      case "4":
-         //TODO Load credit
+         loadCredit(account,socket,500,08034000000d);
          return true;
      case "5":
-         //TODO Change pin
+         methods.editAccount(account.getAccountNumber(), "password", "1234");
          return true;
      case "6":
-         //TODO Check account details
+         methods.getAccount(account.getAccountNumber());
          return true;
      default:
          System.out.println("You have selected an invalid option");
@@ -151,4 +180,14 @@ public class Bank {
          return false;
      }   
  }
+
+
+
+
+private static void loadCredit(Account account, Socket socket,int amount, double phoneNumber) throws IOException {
+	
+	 AdminMethods methods = new AdminMethods(socket);
+	 methods.withdraw(account.getFirstName(), account.getSurname(), account.getAccountNumber(), amount);
+	 System.out.println("Credit sent to "+ phoneNumber);
+}
 }

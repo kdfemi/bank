@@ -18,9 +18,9 @@ public class Admin {
 		DataOutputStream dos = null;
 		DataInputStream dis = null;
 		Boolean detailsCorrect = false;
-		
 		while(!detailsCorrect) {
 		try {
+			
 			System.out.print("\n****************************************\n****************************************\n");
 			System.out.println("Enter your username");
 			System.out.print(">>> ");
@@ -38,7 +38,11 @@ public class Admin {
 	        dos.flush();
 	        dis = new DataInputStream(socket.getInputStream());
 	        detailsCorrect = dis.readBoolean();
-	        if(detailsCorrect) System.out.println("You are Logged in!!!");
+	        if(detailsCorrect) {
+	        	System.out.println("You are Logged in!!!");
+	        	detailsCorrect =false;
+	        	break;
+	        }
 		} catch (IOException e) {
 			
 			e.printStackTrace();
@@ -64,8 +68,16 @@ public class Admin {
 		               System.out.println("1.)YES\t\t\t.2)NO");
 		               System.out.print(">>>");
 		               option = readln.readLine();
-		               if(option.equals("1")) validOption = true;
+		               if(option.equals("1")) {
+		            	   validOption = false;
+		            	   dos.writeBoolean(true);
+		            	   dos.flush();
+		            	   continue;
+		               }
+
+		               dos.writeBoolean(false);
 		               System.out.println();
+		               
 	               }
 
 			} catch (IOException e) {
@@ -74,7 +86,7 @@ public class Admin {
 			}
 
                }while(validOption==false);
-	}
+		}
 	/**
 	  * Direct Admin to their selected option of choice.
 	  * @param option
@@ -88,7 +100,8 @@ public class Admin {
 	     switch(option) {
 	      
 	     case "1":
-	    	 //TODO bvn check if previous bvn name =new account name
+	    	 //normally you do bvn check if previous bvn name matches with new account name
+	    	 //or create bvn data base and check bvn database against name
 	    	methods.createAccount("Miss", "Oyinda", "Badmus", 453290857,"savings");
 	         return true;
 	     case "2":
@@ -104,26 +117,17 @@ public class Admin {
 	         methods.deleteAccount(0, "jane", "doe");
 	         return true;
 	     case "4":
-	         methods.deposit(1052146804, 0.0);
+	         methods.deposit(1150472311, 5000.0);
 	         return true;
 	     case "5":
-	         methods.getAccount(1);
+	         methods.getAccount(1150472311);
 	         return true;
 	     case "6":
-	         //TODO withdraw money for client 
+	         methods.withdraw("Oyinda","Badmus",1150472311,500.0);
 	         return true;
 	     case "7":
-	         System.out.println("You Logged out");
-	         try {
-				socket.close();
-				
-			} catch (IOException e) {
-	
-				e.printStackTrace();
-			}
-	         Thread.sleep(2000);
-	    	 
-	         return true;
+	    	 methods.logOut();
+	         return false;
 	     default:
 	         System.out.println("You have selected an invalid option");
 	         System.out.println("Please try again");
